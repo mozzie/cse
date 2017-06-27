@@ -39,22 +39,44 @@ def ecompute(index,stack,maxlen):
 		return retval
 
 
+def mintreeheight(data, lcp):
+	lcp_max = 0
+	no_of_sus = array.array('i',(0 for i in range(0,data.length()+1)))
+	no_of_lcp = array.array('i',(0 for i in range(0,data.length())))
+	for i in range(0,data.length()-1):
+		if(lcp[i] >= 0):
+			no_of_lcp[lcp[i]] += 1
+		no_of_sus[1 + max(lcp[i],lcp[i+1] )] +=1
+		lcp_max = max(lcp_max, lcp[i])
+	print no_of_lcp
+	print no_of_sus
+	for i in range(0, lcp_max+1):
+		if( (no_of_lcp[i] == 1 and no_of_sus[i+1]>=1) or no_of_lcp==0 ):
+			return i+1
+	return -1
 
 fileContent = bitarray('00110101') #bitarray()
 ##with open('lorem.txt', mode='rb') as file:
 ##	fileContent.fromfile(file)
 
-indices = array.array('I',(i for i in range(0, fileContent.length())))
+indices = array.array('i',(i for i in range(0, fileContent.length())))
 indices = sorted(indices,compare)
 
-LCP = array.array('I',(itertools.chain([0],(lcp(f,s) for f,s in itertools.izip(indices, indices	 [1:])))))
+LCP = array.array('i',(itertools.chain([-1],(lcp(f,s) for f,s in itertools.izip(indices, indices[1:])))))
+
+
 
 stack = []
-S = array.array('I',(scompute(i,stack) for i in range(0,fileContent.length())))
+S = array.array('i',(scompute(i,stack) for i in range(0,fileContent.length())))
 
 stack = []
 maxlen = fileContent.length()
-E = array.array('I', (0 for i in range(0, fileContent.length())))
+E = array.array('i', (0 for i in range(0, fileContent.length())))
 for i in reversed(range(1,fileContent.length())):
 	E[i] = ecompute(i,stack,maxlen) 
 
+R = array.array('i', (0 for i in range(0, fileContent.length())))
+zeros = 0
+for i in range(0, fileContent.length()):
+	zeros = zeros + 1 - fileContent[indices[i]-1]
+	R[i] = zeros
